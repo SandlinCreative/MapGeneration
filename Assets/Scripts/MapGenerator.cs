@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    public enum DrawMode { NoiseMap, ColorMap};
+    public enum DrawMode { NoiseMap, ColorMap, Mesh };
     public DrawMode drawMode;
 
     public int mapWidth;
@@ -12,6 +13,8 @@ public class MapGenerator : MonoBehaviour
     public float noiseScale;
     public int seed;
     public Vector2 offset;
+    public float meshHeightMultiplier;
+    public AnimationCurve meshHeightCurve;
 
     public int octaves;
     [Range(0,1)]
@@ -41,11 +44,12 @@ public class MapGenerator : MonoBehaviour
 
         MapDisplay display = FindObjectOfType<MapDisplay>();
 
-        if(drawMode == DrawMode.NoiseMap)
+        if (drawMode == DrawMode.NoiseMap)
             display.DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
         else if (drawMode == DrawMode.ColorMap)
             display.DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
-
+        else if (drawMode == DrawMode.Mesh)
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve), TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
     }
 
     private void OnValidate()
